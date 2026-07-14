@@ -44,7 +44,7 @@ When the URL is omitted, `add` captures the active tab from the configured brows
 
 `--space` accepts a hierarchical path such as `Work/Engineering`; missing folders are created. During an interactive Space prompt, existing folder paths are shown as you type, and `Tab` / `Shift-Tab` completes or cycles through them. `--space ?` lists the existing folder paths before prompting. `--no-prompt` adds without confirmation, and `--dry-run` prints what would be added without saving. Use `--verbose` to see the config path, data path, and input source.
 
-The standard TUI view uses Nerd Font-style text icons, similar to a file explorer in nvim.
+The standard TUI view features Nerd Font glyphs, similar to NeoVim file explorers (such as neo-tree or nvim-tree).
 
 ```text
 ▾  Bookmarks
@@ -129,7 +129,7 @@ Create the config file and print its path with `brmk config`. By default, it is 
 
 List the TUI color themes with `brmk theme list`, then select one with `brmk theme set NAME`. The built-in themes are `catppuccin-mocha` (the default), `tokyonight`, `dracula`, `nord`, `gruvbox-dark`, `gruvbox-light`, `monochrome`, and `terminal`.
 
-`terminal` leaves the background and normal foreground to your terminal theme. It uses reverse video and bold text only for selection and borders.
+`terminal` inherits the background and foreground colors of your terminal theme. It uses reverse video and bold text only for selection and borders.
 
 Add custom themes under `themes` in the config. Colors use the `#RRGGBB` format; omitted colors inherit from `catppuccin-mocha`.
 
@@ -256,7 +256,7 @@ Export and import use an indentation-based Markdown format:
     - [Example](https://example.com)
 ```
 
-Top-level folders are exported as `- space: Name`. Nested folders use `- folder: Name`. Existing files using `- folder: Name` at the top level are still importable. Bookmarks use normal Markdown links. Metadata is optional:
+Top-level folders are exported as `- space: Name`. Nested folders use `- folder: Name`. Legacy files using `- folder: Name` at the top level are still fully supported for import. Bookmarks use normal Markdown links. Metadata is optional:
 
 - `tags=tag1,tag2`
 
@@ -281,3 +281,4 @@ brew install ./Formula/brmk.rb
 ```
 
 To publish an official tap, put the Formula in a tap repository such as `homebrew-brmk`.
+
