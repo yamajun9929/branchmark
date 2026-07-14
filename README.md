@@ -4,6 +4,8 @@
 
 `Branchmark` は、URL ブックマークをツリーで管理する軽量 TUI ツールです。コマンド名は `brmk` です。
 
+<img width="850" height="420" alt="Image" src="https://github.com/user-attachments/assets/7191ac53-7be6-44c9-8d7b-8eb2691c12e3" />
+
 設計方針:
 
 - Go の単体バイナリとして配布し、Homebrew で入れやすくする

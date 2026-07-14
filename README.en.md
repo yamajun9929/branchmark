@@ -4,6 +4,8 @@
 
 `Branchmark` is a lightweight TUI tool for managing URL bookmarks in a tree. Its command is `brmk`.
 
+<img width="850" height="420" alt="Image" src="https://github.com/user-attachments/assets/7191ac53-7be6-44c9-8d7b-8eb2691c12e3" />
+
 Design principles:
 
 - Distribute a single Go binary that is easy to install with Homebrew
