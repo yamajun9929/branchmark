@@ -6,6 +6,15 @@
 
 <img width="850" height="420" alt="Image" src="https://github.com/user-attachments/assets/7191ac53-7be6-44c9-8d7b-8eb2691c12e3" />
 
+## Features
+
+- **⚡ Instant & Interactive TUI**: Manage, browse, and organize all your bookmarks from a beautiful, responsive terminal interface.
+- **🌐 Active Browser Integration (`add` command)**: Automatically capture the active URL and title from your current browser tab with a single command (supports Chrome, Brave, Edge, Firefox, and more).
+- **🔍 Blazing Fast Tag Filtering**: Instantly search and filter thousands of bookmarks by title, URL, or custom tags in real-time.
+- **📂 Multi-Space Hierarchy**: Group your bookmarks into separate workspaces (Spaces) like `Work` and `Personal` with full folder-tree support.
+- **🔒 Isolated Browser Profiles**: Open selected URLs in isolated browser environments/profiles—perfect for separating work and private sessions.
+- **🎨 Rich Custom Themes**: Built-in support for popular developer themes like Catppuccin, Tokyo Night, Dracula, and Nord, plus custom JSON themes.
+
 Design principles:
 
 - Distribute a single Go binary that is easy to install with Homebrew
