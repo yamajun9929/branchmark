@@ -149,50 +149,50 @@ TUI のカラーテーマは `brmk theme list` で確認し、`brmk theme set NA
 }
 ```
 
-## TUI Keys
+## TUI 操作キー
 
-| Key | Action |
+| キー | アクション |
 | --- | --- |
-| `tab` / `Shift-tab` | switch Space tab forward / backward |
-| `p` | cycle browser profile |
-| `P` | select or create browser profile |
-| `j` / `k` | move down / up |
-| `[` / `]` | jump to previous / next visible folder |
-| `J` / `K` | reorder selected item down / up within the same folder |
-| mouse wheel | scroll |
-| `Ctrl-u` / `Ctrl-d` | scroll up / down |
-| `PageUp` / `PageDown` | scroll up / down |
-| `h` / `l` | collapse / expand |
-| `enter` / `o` | open URL or toggle folder |
-| `a` | add bookmark under the current folder |
-| `A` | add folder under the current folder |
-| `e` | edit selected item |
-| `m` | move selected item with a folder picker; type to filter, `tab` completes the current path |
-| `r` | rename title |
-| `R` | reload bookmarks from disk |
-| `t` | edit tags |
-| `d` | delete selected item |
-| `u` | undo the last delete, move, or reorder |
-| `/` | search |
-| `c` | clear search |
-| `?` | show or hide the help pane |
-| `g` / `G` or `Home` / `End` | jump to top / bottom |
-| left click | select row |
-| left click Space tab | switch Space tab |
-| second click on selected row | open URL or toggle folder |
-| `q` | quit |
+| `tab` / `Shift-tab` | Spaceタブを順方向 / 逆方向に切り替え |
+| `p` | ブラウザプロフィールを順に切り替え |
+| `P` | ブラウザプロフィールを選択または作成 |
+| `j` / `k` | カーソルを下に移動 / 上に移動 |
+| `[` / `]` | 前 / 次の表示されているフォルダーへジャンプ |
+| `J` / `K` | 選択中の項目を同じフォルダー内で下 / 上に移動（並べ替え） |
+| マウスホイール | スクロール |
+| `Ctrl-u` / `Ctrl-d` | 上にスクロール / 下にスクロール |
+| `PageUp` / `PageDown` | 上にスクロール / 下にスクロール |
+| `h` / `l` | フォルダーを閉じる / 展開する |
+| `enter` / `o` | URLを開く、またはフォルダーの展開を切り替え |
+| `a` | 選択中のフォルダー配下にブックマークを追加 |
+| `A` | 選択中のフォルダー配下に新しいフォルダーを追加 |
+| `e` | 選択中の項目を編集 |
+| `m` | 選択中の項目をフォルダーピッカーで移動（文字入力でフィルタ、`Tab`キーで補完） |
+| `r` | タイトルを変更 |
+| `R` | ディスクからブックマークを再読み込み |
+| `t` | タグを編集 |
+| `d` | 選択中の項目を削除 |
+| `u` | 直前の削除、移動、または並べ替え操作を元に戻す（Undo） |
+| `/` | 検索（フィルタリング）を実行 |
+| `c` | 検索フィルターをクリア |
+| `?` | ヘルプペインを表示または非表示に切り替え |
+| `g` / `G` または `Home` / `End` | ツリーの先頭 / 末尾にジャンプ |
+| 左クリック | 行を選択 |
+| Spaceタブを左クリック | Spaceタブを切り替え |
+| 選択中の行を再度クリック | URLを開く、またはフォルダーの展開を切り替え |
+| `q` | 終了 |
 
-Prompt editing:
+プロンプト入力時の編集キー:
 
-- `tab` / `Shift-tab`: complete or cycle candidates where available, such as Profile input
-- `Left` / `Right`: move cursor
-- `Home` / `End`: move to start / end
-- `Backspace` / `Delete`: delete around cursor
-- `Ctrl-a`: select all
-- `Ctrl-u`: clear all
-- typing while all selected replaces the whole value
+- `tab` / `Shift-tab`: プロフィール入力などで、候補を補完または順次切り替え
+- `Left` / `Right`: カーソルを移動
+- `Home` / `End`: 行頭 / 行末にカーソルを移動
+- `Backspace` / `Delete`: カーソルの前後を削除
+- `Ctrl-a`: すべて選択
+- `Ctrl-u`: すべてクリア
+- 全選択状態で文字入力すると入力した値で上書き
 
-macOS terminal apps usually do not send `Cmd` key combinations to TUI programs. With WezTerm, map `Cmd-a` to `Ctrl-a` only while `brmk` is the foreground process:
+macOSのターミナルアプリは通常、`Cmd`キーの組み合わせをTUIプログラムに送信しません。WezTermを使用する場合、`brmk`がフォアグラウンドプロセスである時のみ `Cmd-a` を `Ctrl-a` にマッピングできます：
 
 ```lua
 local function is_brmk_process(pane)
@@ -219,7 +219,7 @@ table.insert(config.keys, {
 })
 ```
 
-In this repository's local WezTerm config, the same behavior is expressed as:
+本リポジトリのローカル WezTerm 設定では、同様の挙動を以下のように記述できます。
 
 ```lua
 local function brmk_key_or(send_key, fallback)
@@ -241,9 +241,9 @@ config.keys = {
 }
 ```
 
-## Markdown Format
+## Markdown フォーマット
 
-Export/import uses an indentation-based Markdown format:
+エクスポートとインポートは、インデント（スペースによる階層化）ベースのMarkdownフォーマットを使用します。
 
 ```md
 # Branchmark bookmark tree v1
@@ -254,17 +254,17 @@ Export/import uses an indentation-based Markdown format:
     - [Example](https://example.com)
 ```
 
-Top-level folders are exported as `- space: Name`. Nested folders use `- folder: Name`. Existing files using `- folder: Name` at the top level are still importable. Bookmarks use normal Markdown links. Metadata is optional:
+最上位のフォルダーは `- space: 名前` としてエクスポートされます。入れ子になったフォルダーは `- folder: 名前` を使用します。既存のファイルで最上位レベルに `- folder: 名前` を使用している場合でもインポート可能です。ブックマークは通常のMarkdownリンクを使用します。メタデータはオプションです：
 
 - `tags=tag1,tag2`
 
-Import behavior:
+インポートの挙動：
 
-- `brmk import FILE`: append the imported top-level nodes as-is
-- `brmk import FILE --merge`: merge imported folders into matching existing folders at the same tree level
-- `brmk import FILE --replace`: replace the current store with the imported Markdown
+- `brmk import FILE`: インポートされた最上位ノードをそのまま末尾に追加します。
+- `brmk import FILE --merge`: インポートされたフォルダーを、同じツリー階層にある既存の同名フォルダーとマージします。
+- `brmk import FILE --replace`: 現在の保存データを、インポートしたMarkdownの内容で完全に置き換えます。
 
-A merge import starter file is available at `examples/merge-import.md`:
+マージインポート用のスターターテンプレートファイルが `examples/merge-import.md` に用意されています。
 
 ```sh
 ./brmk import examples/merge-import.md --merge
