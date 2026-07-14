@@ -1,17 +1,17 @@
 # Branchmark
 
-[English version](README.en.md)
+[日本語版](README.ja.md)
 
-`Branchmark` は、URL ブックマークをツリーで管理する軽量 TUI ツールです。コマンド名は `brmk` です。
+`Branchmark` is a lightweight TUI tool for managing URL bookmarks in a tree. Its command is `brmk`.
 
 <img width="850" height="420" alt="Image" src="https://github.com/user-attachments/assets/7191ac53-7be6-44c9-8d7b-8eb2691c12e3" />
 
-設計方針:
+Design principles:
 
-- Go の単体バイナリとして配布し、Homebrew で入れやすくする
-- 外部 Go 依存を持たず、脆弱性管理の対象を増やしにくくする
-- 常駐するのは任意のローカル追加 API だけにし、TUI は必要なときだけ起動する
-- 描画は ANSI エスケープと標準ライブラリ中心で行い、CPU/メモリ使用量を抑える
+- Distribute a single Go binary that is easy to install with Homebrew
+- Avoid external Go dependencies to keep the vulnerability-management surface small
+- Keep only the optional local add API running; start the TUI only when needed
+- Use ANSI escape sequences and the standard library for rendering to keep CPU and memory usage low
 
 ## Build
 
@@ -40,9 +40,11 @@ go build -trimpath -ldflags "-s -w" -o brmk ./cmd/brmk
 ./brmk completion zsh
 ```
 
-`add` は URL を省略すると、設定したブラウザの現在タブを取得して追加します。足りない項目は入力ラインで確認し、タイトルを空にした場合は URL 先の HTML `<title>` を自動取得します。取得できない場合は URL がタイトルになります。`--space` には `Work/Engineering` のような階層パスを指定でき、存在しないフォルダは作成されます。対話入力時は既存フォルダを入力に合わせて候補表示し、`Tab` / `Shift-Tab` で補完できます。`--space ?` は既存のフォルダパスを表示してから入力できます。`--no-prompt` は確認なしで追加し、`--dry-run` は保存せず追加内容だけ表示します。config path、data path、取得元を確認したい場合は `--verbose` を使います。
+When the URL is omitted, `add` captures the active tab from the configured browser. It prompts for any missing fields. If the title is left empty, it fetches the page's HTML `<title>`; if that cannot be fetched, the URL is used as the title.
 
-TUI の通常表示は、nvim のファイルエクスプローラーに近い Nerd Font 風の文字アイコンです。
+`--space` accepts a hierarchical path such as `Work/Engineering`; missing folders are created. During an interactive Space prompt, existing folder paths are shown as you type, and `Tab` / `Shift-Tab` completes or cycles through them. `--space ?` lists the existing folder paths before prompting. `--no-prompt` adds without confirmation, and `--dry-run` prints what would be added without saving. Use `--verbose` to see the config path, data path, and input source.
+
+The standard TUI view uses Nerd Font-style text icons, similar to a file explorer in nvim.
 
 ```text
 ▾  Bookmarks
@@ -65,9 +67,9 @@ TUI の通常表示は、nvim のファイルエクスプローラーに近い N
 │   └──   󰖟 Example
 ```
 
-Nerd Font アイコンは URL のドメインと一部パスから選びます。GitHub、YouTube、Google 系サービス（Drive / Sheets / Docs / Slides / Forms / Gmail / Calendar / Meet / Maps / Cloud / Analytics / Ads / Classroom / Keep / Play / Translate / Earth / Firebase / Chrome など）、AWS、Salesforce、Microsoft 系サービス（Office / Teams / Outlook / OneDrive / SharePoint / Excel / Word / PowerPoint / OneNote / Azure / Bing など）、Yahoo は専用アイコンに対応しています。
+Nerd Font icons are selected from the URL domain and, for some services, the path. Dedicated icons are supported for GitHub, YouTube, Google services (Drive, Sheets, Docs, Slides, Forms, Gmail, Calendar, Meet, Maps, Cloud, Analytics, Ads, Classroom, Keep, Play, Translate, Earth, Firebase, Chrome, and more), AWS, Salesforce, Microsoft services (Office, Teams, Outlook, OneDrive, SharePoint, Excel, Word, PowerPoint, OneNote, Azure, Bing, and more), and Yahoo.
 
-ルート直下のフォルダは Space として扱われ、TUI上部のタブで切り替えられます。TUI で選択した Space は config の `default_space` に保存され、次回の `brmk add` の既定 Space になります。Profile は Space に紐づけず、TUI全体の「今使うブラウザ環境」として切り替えます。選択中のURLは現在のProfileの新規ウィンドウで開きます。
+Top-level folders are treated as Spaces and can be switched from the tabs at the top of the TUI. The Space selected in the TUI is saved as `default_space` in the config and becomes the default for the next `brmk add`. Profiles are not tied to Spaces: they represent the browser environment currently in use throughout the TUI. The selected URL opens in a new window of the active profile.
 
 ```sh
 ./brmk profile list
@@ -77,13 +79,13 @@ Nerd Font アイコンは URL のドメインと一部パスから選びます�
 ./brmk profile path work
 ```
 
-`managed` profile は `brmk` が専用ディレクトリを作り、Chromium系では `--user-data-dir`、Firefoxでは `--profile` で開きます。`default` profile は従来どおりOSの既定ブラウザで開きます。Arc は外部CLIから独立プロファイルを安定制御しづらいため、Profile分離用途では Chrome / Brave / Edge / Firefox が向いています。
+A `managed` profile has a dedicated directory created by `brmk`. Chromium-based browsers use `--user-data-dir`, and Firefox uses `--profile`. The `default` profile continues to use the operating system's default browser. Arc is difficult to control reliably as an isolated profile from an external CLI, so Chrome, Brave, Edge, or Firefox is recommended when profile isolation is needed.
 
-データファイルの既定値は `~/.config/brmk/bookmarks.json` です。`brmk path` でも確認できます。別ファイルを使う場合は `--data FILE` または `BRMK_DATA` を使います。
+By default, the data file is `~/.config/brmk/bookmarks.json`. You can also check it with `brmk path`. To use another file, pass `--data FILE` or set `BRMK_DATA`.
 
 ## Shell Completion
 
-`zsh` / `bash` / `fish` の補完スクリプトを出力できます。
+Completion scripts are available for `zsh`, `bash`, and `fish`.
 
 ```sh
 ./brmk completion zsh
@@ -91,17 +93,17 @@ Nerd Font アイコンは URL のドメインと一部パスから選びます�
 ./brmk completion fish
 ```
 
-`zsh` で手元のシェルだけに読み込む場合:
+To load it only in the current `zsh` session:
 
 ```sh
 source <(./brmk completion zsh)
 ```
 
-`profile select` / `profile path` は設定済みProfile名、`add --space` は既存のフォルダパスを補完します。`--data` や `--config`、import/exportのファイル引数はファイルパス補完を使います。
+`profile select` and `profile path` complete configured profile names. `add --space` completes existing folder paths. `--data`, `--config`, and the file arguments for import and export use file-path completion.
 
 ## Config
 
-設定ファイルは `brmk config` で作成し、パスを確認できます。既定では `~/.config/brmk/config.json` です。`XDG_CONFIG_HOME` がある場合は `$XDG_CONFIG_HOME/brmk/config.json`、明示的に変える場合は `BRMK_CONFIG` または `--config FILE` を使います。
+Create the config file and print its path with `brmk config`. By default, it is `~/.config/brmk/config.json`. When `XDG_CONFIG_HOME` is set, it is `$XDG_CONFIG_HOME/brmk/config.json`. To override it explicitly, set `BRMK_CONFIG` or pass `--config FILE`.
 
 ```json
 {
@@ -125,11 +127,11 @@ source <(./brmk completion zsh)
 
 ## Theme
 
-TUI のカラーテーマは `brmk theme list` で確認し、`brmk theme set NAME` で切り替えられます。組み込みテーマは `catppuccin-mocha`（既定）、`tokyonight`、`dracula`、`nord`、`gruvbox-dark`、`gruvbox-light`、`monochrome`、`terminal` です。
+List the TUI color themes with `brmk theme list`, then select one with `brmk theme set NAME`. The built-in themes are `catppuccin-mocha` (the default), `tokyonight`, `dracula`, `nord`, `gruvbox-dark`, `gruvbox-light`, `monochrome`, and `terminal`.
 
-`terminal` は背景色と通常の文字色を指定せず、端末のテーマになじませます。選択行と枠線だけを反転・太字で強調します。
+`terminal` leaves the background and normal foreground to your terminal theme. It uses reverse video and bold text only for selection and borders.
 
-独自テーマは config の `themes` に追加できます。色は `#RRGGBB` 形式で、指定しない色は `catppuccin-mocha` を引き継ぎます。
+Add custom themes under `themes` in the config. Colors use the `#RRGGBB` format; omitted colors inherit from `catppuccin-mocha`.
 
 ```json
 {
@@ -153,46 +155,46 @@ TUI のカラーテーマは `brmk theme list` で確認し、`brmk theme set NA
 
 | Key | Action |
 | --- | --- |
-| `tab` / `Shift-tab` | switch Space tab forward / backward |
-| `p` | cycle browser profile |
-| `P` | select or create browser profile |
-| `j` / `k` | move down / up |
-| `[` / `]` | jump to previous / next visible folder |
-| `J` / `K` | reorder selected item down / up within the same folder |
-| mouse wheel | scroll |
-| `Ctrl-u` / `Ctrl-d` | scroll up / down |
-| `PageUp` / `PageDown` | scroll up / down |
-| `h` / `l` | collapse / expand |
-| `enter` / `o` | open URL or toggle folder |
-| `a` | add bookmark under the current folder |
-| `A` | add folder under the current folder |
-| `e` | edit selected item |
-| `m` | move selected item with a folder picker; type to filter, `tab` completes the current path |
-| `r` | rename title |
-| `R` | reload bookmarks from disk |
-| `t` | edit tags |
-| `d` | delete selected item |
-| `u` | undo the last delete, move, or reorder |
-| `/` | search |
-| `c` | clear search |
-| `?` | show or hide the help pane |
-| `g` / `G` or `Home` / `End` | jump to top / bottom |
-| left click | select row |
-| left click Space tab | switch Space tab |
-| second click on selected row | open URL or toggle folder |
-| `q` | quit |
+| `tab` / `Shift-tab` | Switch to the next / previous Space tab |
+| `p` | Cycle browser profiles |
+| `P` | Select or create a browser profile |
+| `j` / `k` | Move down / up |
+| `[` / `]` | Jump to the previous / next visible folder |
+| `J` / `K` | Move the selected item down / up within its folder |
+| Mouse wheel | Scroll |
+| `Ctrl-u` / `Ctrl-d` | Scroll up / down |
+| `PageUp` / `PageDown` | Scroll up / down |
+| `h` / `l` | Collapse / expand |
+| `enter` / `o` | Open a URL or toggle a folder |
+| `a` | Add a bookmark under the current folder |
+| `A` | Add a folder under the current folder |
+| `e` | Edit the selected item |
+| `m` | Move the selected item with a folder picker; type to filter and press `tab` to complete the current path |
+| `r` | Rename the title |
+| `R` | Reload bookmarks from disk |
+| `t` | Edit tags |
+| `d` | Delete the selected item |
+| `u` | Undo the last delete, move, or reorder |
+| `/` | Search |
+| `c` | Clear the search |
+| `?` | Show or hide the help pane |
+| `g` / `G` or `Home` / `End` | Jump to the top / bottom |
+| Left click | Select a row |
+| Left click a Space tab | Switch Space tabs |
+| Click the selected row again | Open a URL or toggle a folder |
+| `q` | Quit |
 
 Prompt editing:
 
 - `tab` / `Shift-tab`: complete or cycle candidates where available, such as Profile input
-- `Left` / `Right`: move cursor
-- `Home` / `End`: move to start / end
-- `Backspace` / `Delete`: delete around cursor
+- `Left` / `Right`: move the cursor
+- `Home` / `End`: move to the start / end
+- `Backspace` / `Delete`: delete around the cursor
 - `Ctrl-a`: select all
 - `Ctrl-u`: clear all
-- typing while all selected replaces the whole value
+- Typing while all text is selected replaces the whole value
 
-macOS terminal apps usually do not send `Cmd` key combinations to TUI programs. With WezTerm, map `Cmd-a` to `Ctrl-a` only while `brmk` is the foreground process:
+macOS terminal apps normally do not send `Cmd` key combinations to TUI programs. With WezTerm, map `Cmd-a` to `Ctrl-a` only while `brmk` is the foreground process:
 
 ```lua
 local function is_brmk_process(pane)
@@ -219,7 +221,7 @@ table.insert(config.keys, {
 })
 ```
 
-In this repository's local WezTerm config, the same behavior is expressed as:
+The same behavior is expressed in this repository's local WezTerm configuration as follows:
 
 ```lua
 local function brmk_key_or(send_key, fallback)
@@ -227,7 +229,7 @@ local function brmk_key_or(send_key, fallback)
     if is_brmk_process(pane) then
       window:perform_action(wezterm.action.SendKey(send_key), pane)
     else
-      window:perform_action(fallback, pane)
+      window:perform_action(fallback)
     end
   end)
 end
@@ -243,7 +245,7 @@ config.keys = {
 
 ## Markdown Format
 
-Export/import uses an indentation-based Markdown format:
+Export and import use an indentation-based Markdown format:
 
 ```md
 # Branchmark bookmark tree v1
@@ -264,7 +266,7 @@ Import behavior:
 - `brmk import FILE --merge`: merge imported folders into matching existing folders at the same tree level
 - `brmk import FILE --replace`: replace the current store with the imported Markdown
 
-A merge import starter file is available at `examples/merge-import.md`:
+A merge-import starter file is available at `examples/merge-import.md`:
 
 ```sh
 ./brmk import examples/merge-import.md --merge
@@ -272,10 +274,10 @@ A merge import starter file is available at `examples/merge-import.md`:
 
 ## Homebrew
 
-リリースタグ作成後、`Formula/brmk.rb` の `url` と `sha256` を実際の tarball に合わせて更新します。
+After creating a release tag, update the `url` and `sha256` in `Formula/brmk.rb` to match the actual tarball.
 
 ```sh
 brew install ./Formula/brmk.rb
 ```
 
-公式 tap にする場合は、Formula を `homebrew-brmk` などの tap リポジトリへ置きます。
+To publish an official tap, put the Formula in a tap repository such as `homebrew-brmk`.
