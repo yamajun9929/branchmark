@@ -22,7 +22,7 @@ var (
 	ansiBorder   = "\x1b[38;2;137;180;250m"
 )
 
-const normalHelpLine = "?:help S:new-space tab/S-tab p/P j/k [/] J/K u R a/A e/m/d q"
+const normalHelpLine = "?:help H/L:spaces S:new-space tab/S-tab p/P j/k [/] J/K u R a/A e/m/d q"
 const treeBodyStartLine = 5
 const mouseScrollLines = 3
 const helpSideWidth = 38
@@ -186,6 +186,10 @@ func (a *app) handleRuneKey(r rune) bool {
 		a.reorderSelected(1)
 	case 'K':
 		a.reorderSelected(-1)
+	case 'H':
+		a.reorderSpace(-1)
+	case 'L':
+		a.reorderSpace(1)
 	case '[':
 		a.jumpFolder(-1)
 	case ']':
@@ -410,6 +414,67 @@ func (a *app) switchSpaceTo(index int) bool {
 		a.saveDefaultSpace("space: " + space.Title)
 	}
 	return true
+}
+
+func (a *app) reorderSpace(delta int) {
+	if a == nil || a.store == nil || a.store.Root == nil {
+		return
+	}
+	if strings.TrimSpace(a.filter) != "" {
+		a.status = "clear search before reordering"
+		return
+	}
+	active := a.activeSpace()
+	if active == nil || active.ID == "root" {
+		a.status = "no Space to reorder"
+		return
+	}
+
+	currentRootIndex := -1
+	for i, child := range a.store.Root.Children {
+		if child != nil && child.ID == active.ID {
+			currentRootIndex = i
+			break
+		}
+	}
+	if currentRootIndex < 0 {
+		a.status = "active Space was not found"
+		return
+	}
+	direction := 1
+	directionName := "right"
+	if delta < 0 {
+		direction = -1
+		directionName = "left"
+	}
+	neighborRootIndex := -1
+	for i := currentRootIndex + direction; i >= 0 && i < len(a.store.Root.Children); i += direction {
+		if child := a.store.Root.Children[i]; child != nil && child.IsFolder() {
+			neighborRootIndex = i
+			break
+		}
+	}
+	if neighborRootIndex < 0 {
+		a.status = "already at " + directionName + ": " + active.Title
+		return
+	}
+
+	selectedID := ""
+	if selected := a.selected(); selected != nil {
+		selectedID = selected.node.ID
+	}
+	a.captureUndo("space reorder", selectedID)
+	other := a.store.Root.Children[neighborRootIndex]
+	a.store.Root.Children[currentRootIndex], a.store.Root.Children[neighborRootIndex] = other, active
+	a.store.Root.Touch()
+	active.Touch()
+	other.Touch()
+	a.selectSpaceByID(active.ID)
+	a.save("moved " + directionName + ": " + active.Title)
+	a.rebuildRows()
+	if selectedID != "" {
+		a.focusNode(selectedID)
+	}
 }
 
 func (a *app) spaceIndexAtX(x int) (int, bool) {
@@ -1894,6 +1959,7 @@ func helpPaneLines() []string {
 		" [/]             prev / next folder",
 		" h/l             collapse / expand",
 		" tab/S-tab       switch Space",
+		" H/L             move Space tab left / right",
 		" p/P             cycle / select profile",
 		" S               add top-level Space",
 		" a/A             add bookmark / folder",

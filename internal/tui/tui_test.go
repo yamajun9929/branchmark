@@ -328,6 +328,53 @@ func TestTabAndShiftTabSwitchSpaces(t *testing.T) {
 	}
 }
 
+func TestReorderSpaceTabsKeepsActiveSpace(t *testing.T) {
+	store := bookmarks.NewStore()
+	one := bookmarks.NewFolder("One")
+	two := bookmarks.NewFolder("Two")
+	three := bookmarks.NewFolder("Three")
+	store.Root.Children = append(store.Root.Children, one, two, three)
+	dataPath := filepath.Join(t.TempDir(), "bookmarks.json")
+	a := &app{
+		dataPath: dataPath,
+		store:    store,
+		config:   bookmarks.DefaultConfig(),
+	}
+	a.spaceIndex = 1
+	a.rebuildRows()
+
+	a.handleRuneKey('H')
+
+	if got := childTitles(store.Root); strings.Join(got, ",") != "Two,One,Three" {
+		t.Fatalf("spaces after H=%v, want Two,One,Three", got)
+	}
+	if active := a.activeSpace(); active == nil || active.ID != two.ID {
+		t.Fatalf("active space after H=%v, want Two", active)
+	}
+	if selected := a.selected(); selected == nil || selected.node.ID != two.ID {
+		t.Fatalf("selected after H=%v, want Two", selected)
+	}
+	if a.status != "moved left: Two" {
+		t.Fatalf("status after H=%q, want moved-left message", a.status)
+	}
+
+	a.handleRuneKey('L')
+
+	if got := childTitles(store.Root); strings.Join(got, ",") != "One,Two,Three" {
+		t.Fatalf("spaces after L=%v, want One,Two,Three", got)
+	}
+	if active := a.activeSpace(); active == nil || active.ID != two.ID {
+		t.Fatalf("active space after L=%v, want Two", active)
+	}
+	saved, err := bookmarks.Load(dataPath)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if got := childTitles(saved.Root); strings.Join(got, ",") != "One,Two,Three" {
+		t.Fatalf("saved spaces=%v, want One,Two,Three", got)
+	}
+}
+
 func TestJumpFolderMovesBetweenVisibleFolders(t *testing.T) {
 	store := bookmarks.NewStore()
 	work := bookmarks.NewFolder("Work")
