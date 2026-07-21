@@ -175,6 +175,7 @@ Add custom themes under `themes` in the config. Colors use the `#RRGGBB` format;
 | `PageUp` / `PageDown` | Scroll up / down |
 | `h` / `l` | Collapse / expand |
 | `enter` / `o` | Open a URL or toggle a folder |
+| `S` | Add a new top-level Space tab |
 | `a` | Add a bookmark under the current folder |
 | `A` | Add a folder under the current folder |
 | `e` | Edit the selected item |

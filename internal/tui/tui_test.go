@@ -248,6 +248,63 @@ func TestTabsRepresentTopLevelSpaces(t *testing.T) {
 	}
 }
 
+func TestCreateSpaceCreatesTopLevelTabAndSelectsIt(t *testing.T) {
+	store := bookmarks.NewStore()
+	work := bookmarks.NewFolder("Work")
+	store.Root.Children = append(store.Root.Children, work)
+	dataPath := filepath.Join(t.TempDir(), "bookmarks.json")
+	configPath := filepath.Join(t.TempDir(), "config.json")
+	a := &app{
+		dataPath:   dataPath,
+		configPath: configPath,
+		store:      store,
+		config:     bookmarks.DefaultConfig(),
+	}
+	a.rebuildRows()
+
+	a.createSpace(" Personal ")
+
+	if len(store.Root.Children) != 2 || store.Root.Children[1].Title != "Personal" {
+		t.Fatalf("top-level spaces=%v, want Work and Personal", childTitles(store.Root))
+	}
+	if active := a.activeSpace(); active == nil || active.Title != "Personal" {
+		t.Fatalf("active space=%v, want Personal", active)
+	}
+	if selected := a.selected(); selected == nil || selected.node.Title != "Personal" {
+		t.Fatalf("selected=%v, want Personal", selected)
+	}
+	saved, err := bookmarks.Load(dataPath)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if len(saved.Root.Children) != 2 || saved.Root.Children[1].Title != "Personal" {
+		t.Fatalf("saved top-level spaces=%v, want Work and Personal", childTitles(saved.Root))
+	}
+	config, err := bookmarks.LoadConfig(configPath)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if config.DefaultSpace != "Personal" {
+		t.Fatalf("default_space=%q, want Personal", config.DefaultSpace)
+	}
+}
+
+func TestCreateSpaceRejectsDuplicateTopLevelName(t *testing.T) {
+	store := bookmarks.NewStore()
+	store.Root.Children = append(store.Root.Children, bookmarks.NewFolder("Work"))
+	a := &app{store: store, dataPath: filepath.Join(t.TempDir(), "bookmarks.json")}
+	a.rebuildRows()
+
+	a.createSpace(" work ")
+
+	if len(store.Root.Children) != 1 {
+		t.Fatalf("top-level spaces=%d, want 1", len(store.Root.Children))
+	}
+	if a.status != "space already exists: Work" {
+		t.Fatalf("status=%q, want duplicate-space message", a.status)
+	}
+}
+
 func TestTabAndShiftTabSwitchSpaces(t *testing.T) {
 	store := bookmarks.NewStore()
 	one := bookmarks.NewFolder("One")

@@ -22,7 +22,7 @@ var (
 	ansiBorder   = "\x1b[38;2;137;180;250m"
 )
 
-const normalHelpLine = "?:help tab/S-tab p/P j/k [/] folders J/K u R enter a/A e/m/d q"
+const normalHelpLine = "?:help S:new-space tab/S-tab p/P j/k [/] J/K u R a/A e/m/d q"
 const treeBodyStartLine = 5
 const mouseScrollLines = 3
 const helpSideWidth = 38
@@ -192,6 +192,8 @@ func (a *app) handleRuneKey(r rune) bool {
 		a.jumpFolder(1)
 	case 'R':
 		a.reload()
+	case 'S':
+		a.addSpace()
 	case 'a':
 		a.addBookmark()
 	case 'A':
@@ -796,6 +798,49 @@ func (a *app) addFolder() {
 	a.rebuildRows()
 }
 
+func (a *app) addSpace() {
+	title, ok := a.prompt("Space", "")
+	if !ok || strings.TrimSpace(title) == "" {
+		a.status = "space add canceled"
+		return
+	}
+	a.createSpace(title)
+}
+
+func (a *app) createSpace(title string) {
+	if a == nil || a.store == nil || a.store.Root == nil {
+		if a != nil {
+			a.status = "space add failed"
+		}
+		return
+	}
+	title = strings.TrimSpace(title)
+	if title == "" {
+		a.status = "space add canceled"
+		return
+	}
+	for _, child := range a.store.Root.Children {
+		if child != nil && child.IsFolder() && strings.EqualFold(strings.TrimSpace(child.Title), title) {
+			a.status = "space already exists: " + child.Title
+			return
+		}
+	}
+
+	a.clearUndo()
+	space := bookmarks.NewFolder(title)
+	a.store.Root.Children = append(a.store.Root.Children, space)
+	a.store.Root.Expanded = true
+	a.store.Root.Touch()
+	if !a.save("space added") {
+		return
+	}
+	a.selectSpaceByID(space.ID)
+	a.cursor = 0
+	a.offset = 0
+	a.rebuildRows()
+	a.saveDefaultSpace("space added: " + space.Title)
+}
+
 func (a *app) editSelected() {
 	selected := a.selected()
 	if selected == nil {
@@ -1319,12 +1364,13 @@ func (a *app) search() {
 	a.rebuildRows()
 }
 
-func (a *app) save(message string) {
+func (a *app) save(message string) bool {
 	if err := bookmarks.Save(a.dataPath, a.store); err != nil {
 		a.status = err.Error()
-		return
+		return false
 	}
 	a.status = message
+	return true
 }
 
 func (a *app) captureUndo(action string, cursorNodeID string) {
@@ -1779,7 +1825,7 @@ func (a *app) draw(cols, rows int, input string, status string, help string) {
 	for line := 0; line < bodyHeight; line++ {
 		index := a.offset + line
 		if len(a.treeRows) == 0 && line == 0 {
-			b.WriteString(styleLine("  No bookmarks. Press a to add a bookmark or A to add a folder.", ansiMuted, treeCols))
+			b.WriteString(styleLine("  No bookmarks. Press a to add a bookmark, A for a folder, or S for a Space.", ansiMuted, treeCols))
 		} else if index < end {
 			item := a.treeRows[index]
 			b.WriteString(renderRow(item, treeCols, index == a.cursor))
@@ -1849,6 +1895,7 @@ func helpPaneLines() []string {
 		" h/l             collapse / expand",
 		" tab/S-tab       switch Space",
 		" p/P             cycle / select profile",
+		" S               add top-level Space",
 		" a/A             add bookmark / folder",
 		" e/r/t           edit / rename / tags",
 		" m               move to folder",
