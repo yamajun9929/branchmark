@@ -45,6 +45,23 @@ func TestResolveThemeUsesCustomOverrides(t *testing.T) {
 	}
 }
 
+func TestResolveThemeCanDisableBackground(t *testing.T) {
+	cfg := bookmarks.DefaultConfig()
+	cfg.Theme = "tokyonight"
+	cfg.TransparentBackground = true
+
+	got := resolveTheme(cfg)
+	if got.background != "" {
+		t.Fatalf("background=%q, want empty", got.background)
+	}
+	if got.foreground == "" {
+		t.Fatal("foreground should remain configured")
+	}
+	if got.selection == "" {
+		t.Fatal("selection background should remain configured")
+	}
+}
+
 func TestResolveTerminalThemeUsesTerminalColors(t *testing.T) {
 	got := resolveTheme(&bookmarks.Config{Theme: "terminal"})
 	if got.background != "" || got.foreground != "" {

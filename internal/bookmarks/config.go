@@ -9,12 +9,13 @@ import (
 )
 
 type Config struct {
-	ActiveProfile   string           `json:"active_profile"`
-	WebBrowser      string           `json:"web_browser,omitempty"`
-	DefaultSpace    string           `json:"default_space,omitempty"`
-	Theme           string           `json:"theme,omitempty"`
-	Themes          map[string]Theme `json:"themes,omitempty"`
-	BrowserProfiles []BrowserProfile `json:"browser_profiles"`
+	ActiveProfile         string           `json:"active_profile"`
+	WebBrowser            string           `json:"web_browser,omitempty"`
+	DefaultSpace          string           `json:"default_space,omitempty"`
+	Theme                 string           `json:"theme,omitempty"`
+	TransparentBackground bool             `json:"transparent_background,omitempty"`
+	Themes                map[string]Theme `json:"themes,omitempty"`
+	BrowserProfiles       []BrowserProfile `json:"browser_profiles"`
 }
 
 // Theme defines optional color overrides for a custom TUI theme. Colors use

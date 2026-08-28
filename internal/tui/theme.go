@@ -110,11 +110,15 @@ func resolveTheme(cfg *bookmarks.Config) theme {
 		name = bookmarks.DefaultTheme
 		p = builtInThemes[name]
 	}
-	return theme{
+	selected := theme{
 		name: name, background: backgroundColor(p.Background), selection: backgroundColor(p.SelectionBackground),
 		foreground: foregroundColor(p.Foreground), muted: foregroundColor(p.Muted), accent: foregroundColor(p.Accent),
 		highlight: foregroundColor(p.Highlight), success: foregroundColor(p.Success), border: foregroundColor(p.Border),
 	}
+	if cfg != nil && cfg.TransparentBackground {
+		selected.background = ""
+	}
+	return selected
 }
 
 func mergePalette(base palette, custom bookmarks.Theme) palette {

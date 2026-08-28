@@ -120,6 +120,7 @@ Create the config file and print its path with `brmk config`. By default, it is 
   "web_browser": "Google Chrome",
   "default_space": "Inbox",
   "theme": "catppuccin-mocha",
+  "transparent_background": false,
   "browser_profiles": [
     {
       "name": "default",
@@ -139,6 +140,8 @@ Create the config file and print its path with `brmk config`. By default, it is 
 List the TUI color themes with `brmk theme list`, then select one with `brmk theme set NAME`. The built-in themes are `catppuccin-mocha` (the default), `tokyonight`, `dracula`, `nord`, `gruvbox-dark`, `gruvbox-light`, `monochrome`, and `terminal`.
 
 `terminal` inherits the background and foreground colors of your terminal theme. It uses reverse video and bold text only for selection and borders.
+
+Set the top-level `transparent_background` option to `true` to leave the application's normal background to the terminal (including WezTerm). Selection and other intentional highlights remain styled.
 
 Add custom themes under `themes` in the config. Colors use the `#RRGGBB` format; omitted colors inherit from `catppuccin-mocha`.
 

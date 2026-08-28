@@ -47,6 +47,23 @@ func TestNormalizeConfigNormalizesCustomThemeNames(t *testing.T) {
 	}
 }
 
+func TestConfigPreservesTransparentBackground(t *testing.T) {
+	path := filepath.Join(t.TempDir(), "config.json")
+	cfg := DefaultConfig()
+	cfg.TransparentBackground = true
+
+	if err := SaveConfig(path, cfg); err != nil {
+		t.Fatal(err)
+	}
+	loaded, err := LoadConfig(path)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if !loaded.TransparentBackground {
+		t.Fatal("transparent_background was not preserved")
+	}
+}
+
 func TestDefaultConfigPathUsesBRMKConfig(t *testing.T) {
 	path := filepath.Join(t.TempDir(), "custom.json")
 	t.Setenv("BRMK_CONFIG", path)

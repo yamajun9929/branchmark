@@ -118,6 +118,7 @@ source <(./brmk completion zsh)
   "web_browser": "Google Chrome",
   "default_space": "Inbox",
   "theme": "catppuccin-mocha",
+  "transparent_background": false,
   "browser_profiles": [
     {
       "name": "default",
@@ -137,6 +138,8 @@ source <(./brmk completion zsh)
 TUI のカラーテーマは `brmk theme list` で確認し、`brmk theme set NAME` で切り替えられます。組み込みテーマは `catppuccin-mocha`（既定）、`tokyonight`、`dracula`、`nord`、`gruvbox-dark`、`gruvbox-light`、`monochrome`、`terminal` です。
 
 `terminal` は背景色と通常の文字色を指定せず、端末のテーマになじませます。選択行と枠線だけを反転・太字で強調します。
+
+config のトップレベルにある `transparent_background` を `true` にすると、アプリケーションの通常背景を端末（WezTermを含む）に委ねられます。選択行などの強調表示はそのまま維持されます。
 
 独自テーマは config の `themes` に追加できます。色は `#RRGGBB` 形式で、指定しない色は `catppuccin-mocha` を引き継ぎます。
 
